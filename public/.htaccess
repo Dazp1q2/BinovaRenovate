@@ -1,0 +1,7 @@
+RewriteEngine On
+RewriteBase /
+RewriteRule ^inmuebles$ vistas/inmuebles.php [L]
+RewriteRule ^inmuebles/([0-9]+)$ vistas/detalle_inmueble.php?id=$1 [L]
+RewriteRule ^login$ vistas/login.php [L]
+RewriteRule ^registro$ vistas/registro.php [L]
+RewriteRule ^perfil_usuario$ vistas/perfil_usuario.php [L]

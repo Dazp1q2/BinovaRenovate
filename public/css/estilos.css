@@ -1,0 +1,148 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Encabezados */
+h1, h2, h3 {
+    color: #333;
+}
+
+/* Navegación */
+nav {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #0056b3;
+}
+
+/* Sección de Buscador */
+.buscador {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.buscador form {
+    display: inline-block;
+}
+
+.buscador input[type="text"] {
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.buscador input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.buscador input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Sección de Propiedades */
+.propiedades {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.propiedades h2 {
+    margin-bottom: 20px;
+}
+
+.inmuebles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.inmueble {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+}
+
+.inmueble:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.inmueble h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.inmueble p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.inmueble a {
+    color: #007BFF;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.inmueble a:hover {
+    color: #0056b3;
+}
+
+/* Sección de Información */
+.informacion {
+    text-align: center;
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.informacion p {
+    color: #666;
+}
+
+/* Mensajes de error */
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+}
