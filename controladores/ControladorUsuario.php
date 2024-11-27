@@ -1,13 +1,16 @@
 <?php
 require_once '../modelos/Usuario.php';
+require_once '../modelos/Rol.php';
 
 class ControladorUsuario {
     private $conexion;
     private $usuario;
+    private $rol;
 
     public function __construct($db){
         $this->conexion = $db;
         $this->usuario = new Usuario($db);
+        $this->rol = new Rol($db);
     }
 
     public function obtenerTodosLosUsuarios(){
@@ -17,6 +20,8 @@ class ControladorUsuario {
     public function obtenerUsuarioPorId($id){
         $this->usuario->id_usuario = $id;
         $this->usuario->leerUnico();
+        $this->rol->leerUnico($this->usuario->id_rol);
+        $this->usuario->nombre_rol = $this->rol->nombre_rol;
         return $this->usuario;
     }
 

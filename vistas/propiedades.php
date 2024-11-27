@@ -6,11 +6,30 @@ require_once '../controladores/ControladorInmueble.php';
 $base_de_datos = new BaseDeDatos();
 $db = $base_de_datos->getConexion();
 $controlador_inmueble = new ControladorInmueble($db);
+
+// Configuración de paginación
+$registros_por_pagina = 6;
+$pagina_actual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$offset = ($pagina_actual - 1) * $registros_por_pagina;
+
+// Búsqueda y filtros
+$busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
+$tipo_inmueble = isset($_GET['tipo_inmueble']) ? $_GET['tipo_inmueble'] : '';
+$ciudad = isset($_GET['ciudad']) ? $_GET['ciudad'] : '';
+$precio_min = isset($_GET['precio_min']) ? $_GET['precio_min'] : '';
+$precio_max = isset($_GET['precio_max']) ? $_GET['precio_max'] : '';
+
+// Obtener inmuebles con filtros
+$inmuebles = $controlador_inmueble->obtenerInmueblesConFiltros($busqueda, $tipo_inmueble, $ciudad, $precio_min, $precio_max, $offset, $registros_por_pagina);
+
+// Contar total de inmuebles con filtros para paginación
+$total_registros = $controlador_inmueble->contarInmueblesConFiltros($busqueda, $tipo_inmueble, $ciudad, $precio_min, $precio_max);
+$total_paginas = ceil($total_registros / $registros_por_pagina);
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sitio de Arrendamientos</title>
+    <title>Todas las Propiedades</title>
     <link rel="stylesheet" href="../public/css/estilos.css">
 </head>
 <body>
@@ -18,18 +37,27 @@ $controlador_inmueble = new ControladorInmueble($db);
 
     <section class="buscador">
         <h2>Búsqueda de Propiedades</h2>
-        <form id="buscadorForm" action="buscar_inmuebles.php" method="get">
-            <input type="text" id="busqueda" name="busqueda" placeholder="Buscar propiedades...">
+        <form id="buscadorForm" action="propiedades.php" method="get">
+            <input type="text" id="busqueda" name="busqueda" placeholder="Buscar propiedades..." value="<?php echo htmlspecialchars($busqueda); ?>">
+            <input type="text" id="ciudad" name="ciudad" placeholder="Ciudad" value="<?php echo htmlspecialchars($ciudad); ?>">
+            <select id="tipo_inmueble" name="tipo_inmueble">
+                <option value="">Tipo de Inmueble</option>
+                <option value="Departamento" <?php if ($tipo_inmueble == 'Departamento') echo 'selected'; ?>>Departamento</option>
+                <option value="Casa" <?php if ($tipo_inmueble == 'Casa') echo 'selected'; ?>>Casa</option>
+                <option value="Oficina" <?php if ($tipo_inmueble == 'Oficina') echo 'selected'; ?>>Oficina</option>
+                <option value="Comercial" <?php if ($tipo_inmueble == 'Comercial') echo 'selected'; ?>>Comercial</option>
+            </select>
+            <input type="number" id="precio_min" name="precio_min" placeholder="Precio Mínimo" value="<?php echo htmlspecialchars($precio_min); ?>">
+            <input type="number" id="precio_max" name="precio_max" placeholder="Precio Máximo" value="<?php echo htmlspecialchars($precio_max); ?>">
             <input type="submit" value="Buscar">
         </form>
     </section>
 
     <section class="propiedades">
-        <h2>Propiedades Destacadas</h2>
+        <h2>Todas las Propiedades</h2>
         <div class="inmuebles-grid">
             <?php
-                $stmt = $controlador_inmueble->obtenerInmueblesRecientes();
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                while ($row = $inmuebles->fetch(PDO::FETCH_ASSOC)) {
                     extract($row);
                     echo "<div class='inmueble'>";
                     if (!empty($imagen_vista_previa)) {
@@ -47,18 +75,22 @@ $controlador_inmueble = new ControladorInmueble($db);
                 }
             ?>
         </div>
-        <a href="propiedades.php" class="boton">Ver Todas las Propiedades</a>
-    </section>
 
-    <section class="informacion">
-        <h2>Información sobre Nosotros</h2>
-        <p>Bienvenido a BinovaRenovate, tu portal de arrendamientos en línea. Ofrecemos una amplia variedad de propiedades para arrendar, desde departamentos y casas hasta oficinas y espacios comerciales. Contáctanos para más información o para programar una visita.</p>
+        <!-- Paginación -->
+        <div class="paginacion">
+            <?php
+                if ($total_paginas > 1) {
+                    for ($i = 1; $i <= $total_paginas; $i++) {
+                        echo "<a href='propiedades.php?busqueda=" . htmlspecialchars($busqueda) . "&ciudad=" . htmlspecialchars($ciudad) . "&tipo_inmueble=" . htmlspecialchars($tipo_inmueble) . "&precio_min=" . htmlspecialchars($precio_min) . "&precio_max=" . htmlspecialchars($precio_max) . "&pagina=" . $i . "' class='boton " . ($i == $pagina_actual ? 'activo' : '') . "'>$i</a>";
+                    }
+                }
+            ?>
+        </div>
     </section>
 </body>
 </html>
 
 <style>
-
 /* estilos.css */
 
 body {
@@ -98,12 +130,14 @@ h2 {
 
 .buscador form {
     display: flex;
+    flex-wrap: wrap; /* Permitir que los elementos se envuelvan en varias líneas */
     justify-content: center;
     gap: 10px;
 }
 
-.buscador input[type="text"] {
-    width: 60%;
+.buscador input[type="text"],
+.buscador input[type="number"],
+.buscador select {
     padding: 10px;
     border: 2px solid #3498db;
     border-radius: 5px;
@@ -167,6 +201,31 @@ h2 {
 
 .inmueble a.boton:hover {
     background-color: #2ecc71;
+}
+
+/* Paginación */
+.paginacion {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.paginacion a {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.paginacion a:hover {
+    background-color: #2980b9;
+}
+
+.paginacion a.activo {
+    background-color: #27ae60; /* Color diferente para la página activa */
 }
 
 /* Sección de Información */

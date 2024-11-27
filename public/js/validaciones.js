@@ -63,4 +63,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const formRegistrarInmueble = document.getElementById('registrarInmuebleForm');
+    if (formRegistrarInmueble) {
+        formRegistrarInmueble.addEventListener('submit', function(event) {
+            if (!validarFormularioInmueble(event)) {
+                event.preventDefault();
+            }
+        });
+    }
 
+    function validarFormularioInmueble(event) {
+        let isValid = true;
+        const camposRequeridos = document.querySelectorAll('#registrarInmuebleForm input[required], #registrarInmuebleForm textarea[required]');
+
+        camposRequeridos.forEach(campo => {
+            if (campo.value.trim() === '') {
+                isValid = false;
+                campo.style.borderColor = 'red';
+            } else {
+                campo.style.borderColor = '';
+            }
+        });
+
+        // Validar archivo de imagen
+        const imagenVistaPrevia = document.getElementById('imagen_vista_previa');
+        if (imagenVistaPrevia.files.length === 0) {
+            isValid = false;
+            imagenVistaPrevia.style.borderColor = 'red';
+        } else {
+            const archivo = imagenVistaPrevia.files[0];
+            const tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!tiposPermitidos.includes(archivo.type)) {
+                isValid = false;
+                imagenVistaPrevia.style.borderColor = 'red';
+                alert('Solo se permiten archivos de imagen (JPEG, PNG, GIF).');
+            } else {
+                imagenVistaPrevia.style.borderColor = '';
+            }
+        }
+
+        return isValid;
+    }
+});
